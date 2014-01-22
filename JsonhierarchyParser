@@ -1,0 +1,68 @@
+import java.util.Iterator;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+//break json-hierarchy into key-value pair
+public class JsonhierarchyParser {
+	
+	/**
+	 * @author Rohan Kamat
+	 * @version 1.0
+	 * @Date June 11, 2013
+	 */
+	
+	
+	private JSONObject result=new JSONObject();
+
+	public JSONObject getResult() {
+		return result;
+	}
+
+	public void setResult(String key,Object value) {
+		this.result .put(key, value);
+	}
+
+	public void parseJson(JSONObject data) {
+
+        if (data != null) {
+            Iterator<String> it = data.keySet().iterator();
+            while (it.hasNext()) {
+                String key = it.next();
+
+                try {
+                    if (data.get(key) instanceof JSONArray) {
+                        JSONArray arry = (JSONArray) data.get(key);
+                        int size = arry.size();
+                        for (int i = 0; i < size; i++) {
+                        	try{
+                        	parseJson((JSONObject)arry.get(i));
+                        	}
+                        	catch(Exception ex){
+                        		System.out.println("" + key + " : " + data.get(key));	
+                        		setResult(key, data.get(key));
+                        	}
+                        }
+                    } else if (data.get(key) instanceof JSONObject) {
+                    	try{
+                    	parseJson((JSONObject)data.get(key));
+                    	}
+                    	catch(Exception ex){
+                    		setResult(key, data.get(key));
+                    		System.out.println("" + key + " : " + data.get(key));	
+                    	}
+                    } else {
+                    	setResult(key, data.get(key));
+                    	System.out.println("" + key + " : " + data.get(key));
+                    
+                    }
+                } catch (Throwable e) {
+                	setResult(key, data.get(key));
+                    e.printStackTrace();
+
+                }
+            }
+        }
+    }
+	
+	
+}
